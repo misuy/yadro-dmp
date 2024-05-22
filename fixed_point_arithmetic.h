@@ -10,6 +10,10 @@ typedef struct uf64 {
 
 #define UF64_NEW(int_part, frac_part) (uf64) { int_part, frac_part }
 
+#define UF64_GET_INT_PART(op) op.int_part
+
+#define UF64_GET_FRAC_PART(op, prec) op.frac_part >> (32 - prec)
+
 #define UF64_FROM_U32(op) UF64_NEW(op, 0)
 
 #define UF64_FROM_COMPOSED_U64(op) UF64_NEW(op >> 32, op)
