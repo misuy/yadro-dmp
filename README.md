@@ -31,8 +31,8 @@ cat /sys/module/dmp/devices/<name_for_stat>/stat
 #   reqs: %u (read requests count)
 #   avg_size: %u (average size of blocks to read)
 # write:
-#   reqs: %u (read requests count)
-#   avg_size: %u (average size of blocks to read)
+#   reqs: %u (write requests count)
+#   avg_size: %u (average size of blocks to write)
 # total:
 #   reqs: %u (total requests count)
 #   avg_size: %u (average size of all blocks)
@@ -42,6 +42,7 @@ cat /sys/module/dmp/devices/<name_for_stat>/stat
 ```shell
 make test
 
+# dmpN -- means N 512-byte sectors in underlying device
 # ...
 # ...
 # --------------------DMP1 STAT--------------------
