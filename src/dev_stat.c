@@ -4,12 +4,16 @@ void dev_stat_add_req(struct dev_stat *stat, struct bio *req) {
 	switch (bio_op(req)) {
 		case REQ_OP_READ:
 			printk(KERN_CRIT "read %u", req->bi_iter.bi_size);
-			stat->read_avg_blk_sz = (stat->read_req_cnt * stat->read_avg_blk_sz + req->bi_iter.bi_size) / (stat->read_req_cnt + 1);
+			stat->read_avg_blk_sz = 
+				(stat->read_req_cnt * stat->read_avg_blk_sz + req->bi_iter.bi_size) / 
+				(stat->read_req_cnt + 1);
 			stat->read_req_cnt++;
 			break;
 		case REQ_OP_WRITE:
 			printk(KERN_CRIT "write %u", req->bi_iter.bi_size);
-			stat->write_avg_blk_sz = (stat->write_req_cnt * stat->write_avg_blk_sz + req->bi_iter.bi_size) / (stat->write_req_cnt + 1);
+			stat->write_avg_blk_sz = 
+				(stat->write_req_cnt * stat->write_avg_blk_sz + req->bi_iter.bi_size) / 
+				(stat->write_req_cnt + 1);
 			stat->write_req_cnt++;
 			break;
 		default:
@@ -17,27 +21,29 @@ void dev_stat_add_req(struct dev_stat *stat, struct bio *req) {
 }
 
 static ssize_t stat_show(struct dev_stat *stat, struct stat_attribute *attr, char *buf) {
-		u32 total_avg_blk_sz = (stat->read_req_cnt * stat->read_avg_blk_sz + stat->write_req_cnt * stat->write_avg_blk_sz) / (stat->read_req_cnt + stat->write_req_cnt);
+		u32 total_avg_blk_sz = 
+			( stat->read_req_cnt * stat->read_avg_blk_sz +
+				stat->write_req_cnt * stat->write_avg_blk_sz) / 
+			(stat->read_req_cnt + stat->write_req_cnt);
 
-	return
-		sysfs_emit(
-			buf,
-			"read:\n"
-			"  reqs: %u\n"
-			"  avg_size: %u\n"
-			"write:\n"
-			"  reqs: %u\n"
-			"  avg_size: %u\n"
-			"total:\n"
-			"  reqs: %u\n"
-			"  avg_size: %u\n",
-			stat->read_req_cnt,
-			stat->read_avg_blk_sz,
-			stat->write_req_cnt,
-			stat->write_avg_blk_sz,
-			stat->read_req_cnt + stat->write_req_cnt,
-			total_avg_blk_sz
-		);
+	return sysfs_emit(
+		buf,
+		"read:\n"
+		"  reqs: %u\n"
+		"  avg_size: %u\n"
+		"write:\n"
+		"  reqs: %u\n"
+		"  avg_size: %u\n"
+		"total:\n"
+		"  reqs: %u\n"
+		"  avg_size: %u\n",
+		stat->read_req_cnt,
+		stat->read_avg_blk_sz,
+		stat->write_req_cnt,
+		stat->write_avg_blk_sz,
+		stat->read_req_cnt + stat->write_req_cnt,
+		total_avg_blk_sz
+	);
 }
 
 static struct stat_attribute stat_attr = __ATTR(stat, S_IRUGO, stat_show, NULL);
