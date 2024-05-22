@@ -73,7 +73,6 @@ dmp_ctr_fail:
 static void dmp_dtr(struct dm_target *ti) {
 	struct dmp_target *target = (struct dmp_target *) ti->private;
 
-	printk(KERN_CRIT ">> dmp_dtr");
 	dm_put_device(ti, target->dev);
 	kobject_put(&target->dev_stat->kobj);
 	kfree(target);
@@ -104,14 +103,15 @@ static struct target_type dmp_target = {
 
 
 static int __init init_dmp(void) {
+	printk(KERN_DEBUG "%s: >>init_dmp", THIS_MODULE->name);
 	if (dm_register_target(&dmp_target) < 0) {
-		printk(KERN_CRIT "dm target registration error");
+		printk(KERN_ERR "%s: dm target registration error", THIS_MODULE->name);
 		return -EINVAL;
 	}
 
 	devices = kset_create_and_add(KSET_DEVICES_NAME, NULL, &THIS_MODULE->mkobj.kobj);
 	if (!devices) {
-		printk(KERN_CRIT "deivices kset init error");
+		printk(KERN_ERR "%s: deivices kset init error", THIS_MODULE->name);
 		return -EINVAL;
 	}
 
@@ -120,6 +120,7 @@ static int __init init_dmp(void) {
 
 
 static void __exit exit_dmp(void) {
+	printk(KERN_DEBUG "%s: >>exit_dmp", THIS_MODULE->name);
 	dm_unregister_target(&dmp_target);
 	kset_unregister(devices);
 }
@@ -129,5 +130,5 @@ module_init(init_dmp);
 module_exit(exit_dmp);
 
 MODULE_AUTHOR("Mihail Peredriy <mperedriy@bk.ru>");
-MODULE_DESCRIPTION(DM_NAME " ...");
+MODULE_DESCRIPTION(DM_NAME " device mapper proxy");
 MODULE_LICENSE("GPL");

@@ -19,6 +19,8 @@ make insmod
 #### create new virt device
 ```shell
 dmsetup create <device_name> --table "0 <size> dmp <underlying/device/path> <name_for_stat>"
+
+# created device path: /dev/mapper/<device_name>
 ```
 
 #### get device stat
@@ -26,14 +28,14 @@ dmsetup create <device_name> --table "0 <size> dmp <underlying/device/path> <nam
 cat /sys/module/dmp/devices/<name_for_stat>/stat
 
 # read:
-#   reqs: %u
-#   avg_size: %u
+#   reqs: %u (read requests count)
+#   avg_size: %u (average size of blocks to read)
 # write:
-#   reqs: %u
-#   avg_size: %u
+#   reqs: %u (read requests count)
+#   avg_size: %u (average size of blocks to read)
 # total:
-#   reqs: %u
-#   avg_size: %u
+#   reqs: %u (total requests count)
+#   avg_size: %u (average size of all blocks)
 ```
 
 #### test

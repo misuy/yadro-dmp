@@ -3,14 +3,12 @@
 void dev_stat_add_req(struct dev_stat *stat, struct bio *req) {
 	switch (bio_op(req)) {
 		case REQ_OP_READ:
-			printk(KERN_CRIT "read %u", req->bi_iter.bi_size);
 			stat->read_avg_blk_sz = 
 				(stat->read_req_cnt * stat->read_avg_blk_sz + req->bi_iter.bi_size) / 
 				(stat->read_req_cnt + 1);
 			stat->read_req_cnt++;
 			break;
 		case REQ_OP_WRITE:
-			printk(KERN_CRIT "write %u", req->bi_iter.bi_size);
 			stat->write_avg_blk_sz = 
 				(stat->write_req_cnt * stat->write_avg_blk_sz + req->bi_iter.bi_size) / 
 				(stat->write_req_cnt + 1);
@@ -73,7 +71,6 @@ static struct sysfs_ops dev_stat_sysfs_ops = (struct sysfs_ops) {
 
 static void dev_stat_release(struct kobject *kobj) {
 	struct dev_stat *stat;
-	printk(KERN_CRIT ">> dev_stat_release");
 	stat = container_of(kobj, struct dev_stat, kobj);
 	kfree(stat);
 }
