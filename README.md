@@ -1,9 +1,11 @@
 ## YADRO-DMP (device mapper proxy)
 
+DMP -- Linux device mapper target, that processes I/O requests to an underlying devices, and collect data about count of requests and average size of transmitted blocks. This statistics can be accessed through sysfs.
+
 #### Комментарий
 Релизация соответствует описанию в ТЗ, за исключением одной детали: \
-Судя по всему, в задании подразумевалось, что модуль накапливает статистические данные в одном хранилище, общем для всех устройств, т.к. это хранилище ассоциировано с самим модулем (cat /sys/module/dmp/stat/volumes). \
-Мне показалось, что было бы здорово хранить статистические данные для каждого устройства отдельно. В связи с этим получившийся интерфейс взаимодействия с модулем немного отличается от интерфейса, описанного в задании. Он будет рассмотрен далее.
+Судя по всему, в задании подразумевалось, что модуль накапливает статистические данные в одном, общем для всех устройств хранилище, т.к. это хранилище ассоциировано с самим модулем (cat /sys/module/dmp/stat/volumes). \
+Мне показалось, что было бы здорово хранить статистические данные для каждого устройства отдельно. В связи с этим получившийся интерфейс взаимодействия с модулем немного отличается от интерфейса, описанного в задании. Он описан в user-guide.
 
 ### user-guide
 #### build
@@ -18,7 +20,7 @@ make insmod
 
 #### create new virt device
 ```shell
-dmsetup create <device_name> --table "0 <size> dmp <underlying/device/path> <name_for_stat>"
+dmsetup create <device_name> --table "0 <size_in_sectors> dmp <underlying/device/path> <name_for_stat>"
 
 # created device path: /dev/mapper/<device_name>
 ```
