@@ -1,17 +1,42 @@
 #!/bin/bash
-losetup -d /dev/loop6
-dmsetup remove dmp1
-dmsetup remove dmp2
 
-dd if=/dev/zero of=/tmp/disk2048 bs=512 count=4
-losetup --sector-size 512 /dev/loop6 /tmp/disk2048
 
-dmsetup create dmp1 --table "0 4 dmp /dev/loop6 dmp1"
+# size in 512-byte sectors
+for ((size=1; size <= 256; size=size*2))
+do
+    dmsetup remove dmp$size
+    losetup -d /dev/loop6
+    rm /tmp/disk$size
 
-dd if=/dev/random of=/dev/mapper/dmp1 bs=512 count=1
+    echo
+    echo "creating file /tmp/disk$size (size $((512 * $size)))"
+    dd if=/dev/zero of=/tmp/disk$size bs=512 count=$size
 
-dd if=/dev/random of=/dev/mapper/dmp1 bs=512 count=2
+    echo
+    echo "attaching /dev/loop6 to /tmp/disk$size"
+    losetup --sector-size 512 /dev/loop6 /tmp/disk$size
 
-dd if=/dev/random of=/dev/mapper/dmp1 bs=512 count=4
+    echo
+    echo "creating dmp$size over /dev/loop6"
+    dmsetup create dmp$size --table "0 $size dmp /dev/loop6 dmp$size"
 
-cat /sys/module/dmp/devices/dmp1/stat
+    for ((i=0; i < 10; i++))
+    do
+        dd if=/dev/random of=/dev/mapper/dmp$size bs=512 count=$size
+    done
+
+    echo
+    echo "--------------------DMP$size STAT--------------------"
+    cat /sys/module/dmp/devices/dmp$size/stat
+    echo "-------------------------------------------------"        
+    echo
+
+    echo "cleaning up"
+    dmsetup remove dmp$size
+    losetup -d /dev/loop6
+    rm /tmp/disk$size
+    echo
+    echo
+    echo
+    echo
+done

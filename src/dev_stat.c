@@ -66,8 +66,9 @@ static struct sysfs_ops dev_stat_sysfs_ops = (struct sysfs_ops) {
 };
 
 static void dev_stat_release(struct kobject *kobj) {
+	struct dev_stat *stat;
 	printk(KERN_CRIT ">> dev_stat_release");
-	struct dev_stat *stat = container_of(kobj, struct dev_stat, kobj);
+	stat = container_of(kobj, struct dev_stat, kobj);
 	kfree(stat);
 }
 
